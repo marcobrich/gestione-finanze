@@ -76,7 +76,7 @@
   }
 
   *{ box-sizing:border-box; }
-  html,body{ margin:0; padding:0; height:100%; }
+  html,body{ margin:0; padding:0; height:100%; height:-webkit-fill-available; }
   body{
     background:var(--paper);
     color:var(--ink);
@@ -96,7 +96,11 @@
   }
 
   /* ---------- App shell ---------- */
-  .app{ position:fixed; inset:0; display:flex; flex-direction:column; }
+  .app{
+    position:fixed; top:0; left:0; right:0;
+    height:100vh; height:-webkit-fill-available; height:100dvh;
+    display:flex; flex-direction:column;
+  }
 
   header.topbar{
     position:relative; z-index:5;
@@ -161,6 +165,12 @@
   input[type="text"], input[type="number"], input[type="date"], select{
     background:var(--card-raised); border:1px solid var(--hairline-strong); border-radius:9px;
     padding:9px 10px; font-size:16px; color:var(--ink); width:100%; min-width:0; box-sizing:border-box;
+    -webkit-appearance:none; appearance:none;
+  }
+  input[type="date"]{ -webkit-appearance:none; appearance:none; }
+  select{
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%238B948A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 8l4 4 4-4'/></svg>");
+    background-repeat:no-repeat; background-position:right 12px center; background-size:14px; padding-right:34px;
   }
   .btn{
     display:inline-flex; align-items:center; justify-content:center; gap:6px;
