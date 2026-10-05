@@ -1,0 +1,10 @@
+{
+  "name": "Patrimonio — Spese, Budget e Previsioni",
+  "short_name": "Patrimonio",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0A0F0C",
+  "theme_color": "#0b0f0d",
+  "orientation": "portrait"
+}
