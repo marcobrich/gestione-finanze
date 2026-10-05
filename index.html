@@ -194,6 +194,7 @@
   .expense-row .meta{ flex:1; min-width:0; }
   .expense-row .cat{ font-size:14px; font-weight:600; }
   .expense-row .note{ font-size:12px; color:var(--ink-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .expense-row .note.recur-line{ white-space:normal; overflow:visible; text-overflow:clip; display:flex; flex-wrap:wrap; align-items:center; gap:4px; row-gap:4px; }
   .expense-row .date{ font-size:11px; color:var(--ink-muted); }
   .expense-row .amt{ font-size:14px; font-weight:700; }
   .expense-row .del{ color:var(--ink-muted); font-size:16px; padding:4px 6px; }
@@ -284,9 +285,9 @@
   .empty{ border:1.5px dashed var(--hairline-strong); border-radius:12px; }
 
   .amt.good{ color:var(--status-good); }
-  .recur-day{ width:44px; display:inline-block; padding:2px 5px; font-size:12px; border-radius:6px; margin-left:3px; }
-  .recur-amt{ width:78px; text-align:right; padding:5px 6px; font-size:14px; font-weight:700; flex:none; }
-  .recur-freq{ width:auto; display:inline-block; padding:2px 4px; font-size:12px; border-radius:6px; }
+  input.recur-day{ width:44px; max-width:44px; display:inline-block; padding:2px 5px; font-size:12px; border-radius:6px; margin-left:3px; flex:none; }
+  input.recur-amt{ width:78px; max-width:78px; text-align:right; padding:5px 6px; font-size:14px; font-weight:700; flex:none; }
+  select.recur-freq{ width:auto; max-width:100%; display:inline-block; padding:2px 4px; font-size:12px; border-radius:6px; }
   .badge-recurring{
     font-size:10px; font-weight:700; color:var(--accent); background:var(--accent-soft);
     padding:1px 6px; border-radius:6px; margin-left:5px; vertical-align:1px; white-space:nowrap;
@@ -627,8 +628,8 @@
           return '<div class="expense-row">'+
             '<span class="dot" style="background:'+catColor(catSlot(t.categoryId))+'"></span>'+
             '<div class="meta"><div class="cat">'+esc(catLabel(t.categoryId))+(t.note?' · '+esc(t.note):'')+'</div>'+
-              '<div class="note">↻ <select class="recur-freq" data-type="expense" data-id="'+t.id+'">'+freqOptions(t.everyMonths)+'</select>'+
-                ' il giorno <input type="number" class="recur-day" data-type="expense" data-id="'+t.id+'" min="1" max="31" value="'+t.dayOfMonth+'"></div>'+
+              '<div class="note recur-line">↻ <select class="recur-freq" data-type="expense" data-id="'+t.id+'">'+freqOptions(t.everyMonths)+'</select>'+
+                '<span>il giorno</span> <input type="number" class="recur-day" data-type="expense" data-id="'+t.id+'" min="1" max="31" value="'+t.dayOfMonth+'"></div>'+
               (next ? '<div class="note" style="color:var(--ink-muted);">Prossima: '+next.split('-').reverse().join('/')+'</div>' : '')+
             '</div>'+
             '<input type="number" class="recur-amt tnum" data-type="expense" data-id="'+t.id+'" min="0" step="0.01" value="'+t.amount+'">'+
@@ -889,8 +890,8 @@
         return '<div class="expense-row">'+
           '<span class="dot" style="background:var(--status-good)"></span>'+
           '<div class="meta"><div class="cat">'+esc(t.label)+'</div>'+
-            '<div class="note">↻ <select class="recur-freq" data-type="income" data-id="'+t.id+'">'+freqOptions(t.everyMonths)+'</select>'+
-              ' il giorno <input type="number" class="recur-day" data-type="income" data-id="'+t.id+'" min="1" max="31" value="'+t.dayOfMonth+'"></div>'+
+            '<div class="note recur-line">↻ <select class="recur-freq" data-type="income" data-id="'+t.id+'">'+freqOptions(t.everyMonths)+'</select>'+
+              '<span>il giorno</span> <input type="number" class="recur-day" data-type="income" data-id="'+t.id+'" min="1" max="31" value="'+t.dayOfMonth+'"></div>'+
             (next ? '<div class="note" style="color:var(--ink-muted);">Prossima: '+next.split('-').reverse().join('/')+'</div>' : '')+
           '</div>'+
           '<input type="number" class="recur-amt tnum" data-type="income" data-id="'+t.id+'" min="0" step="0.01" value="'+t.amount+'">'+
