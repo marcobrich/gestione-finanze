@@ -162,7 +162,6 @@
     background:var(--card-raised); border:1px solid var(--hairline-strong); border-radius:9px;
     padding:9px 10px; font-size:16px; color:var(--ink); width:100%; min-width:0; box-sizing:border-box;
   }
-  input[type="date"]{ font-size:15px; padding-left:8px; padding-right:4px; }
   .btn{
     display:inline-flex; align-items:center; justify-content:center; gap:6px;
     background:var(--accent); color:var(--accent-ink); font-weight:700; font-size:14px;
@@ -195,7 +194,8 @@
   .expense-row .meta{ flex:1; min-width:0; }
   .expense-row .cat{ font-size:14px; font-weight:600; }
   .expense-row .note{ font-size:12px; color:var(--ink-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .expense-row .note.recur-line{ white-space:normal; overflow:visible; text-overflow:clip; display:flex; flex-wrap:wrap; align-items:center; gap:4px; row-gap:4px; }
+  .expense-row .note.recur-line{ white-space:normal; overflow:visible; text-overflow:clip; display:flex; flex-wrap:wrap; align-items:center; gap:6px; row-gap:6px; font-size:14px; }
+  .expense-row .note.recur-next{ white-space:normal; font-size:13px; }
   .expense-row .date{ font-size:11px; color:var(--ink-muted); }
   .expense-row .amt{ font-size:14px; font-weight:700; }
   .expense-row .del{ color:var(--ink-muted); font-size:16px; padding:4px 6px; }
@@ -287,9 +287,9 @@
   .empty{ border:1.5px dashed var(--hairline-strong); border-radius:12px; }
 
   .amt.good{ color:var(--status-good); }
-  input.recur-day{ width:44px; max-width:44px; display:inline-block; padding:2px 5px; font-size:12px; border-radius:6px; margin-left:3px; flex:none; }
-  input.recur-amt{ width:78px; max-width:78px; text-align:right; padding:5px 6px; font-size:14px; font-weight:700; flex:none; }
-  select.recur-freq{ width:auto; max-width:100%; display:inline-block; padding:2px 4px; font-size:12px; border-radius:6px; }
+  input.recur-day{ width:56px; max-width:56px; display:inline-block; padding:4px 6px; font-size:16px; border-radius:6px; margin-left:3px; flex:none; }
+  input.recur-amt{ width:92px; max-width:92px; text-align:right; padding:6px 7px; font-size:16px; font-weight:700; flex:none; }
+  select.recur-freq{ width:auto; max-width:100%; display:inline-block; padding:4px 6px; font-size:16px; border-radius:6px; }
   .badge-recurring{
     font-size:10px; font-weight:700; color:var(--accent); background:var(--accent-soft);
     padding:1px 6px; border-radius:6px; margin-left:5px; vertical-align:1px; white-space:nowrap;
@@ -632,7 +632,7 @@
             '<div class="meta"><div class="cat">'+esc(catLabel(t.categoryId))+(t.note?' · '+esc(t.note):'')+'</div>'+
               '<div class="note recur-line">↻ <select class="recur-freq" data-type="expense" data-id="'+t.id+'">'+freqOptions(t.everyMonths)+'</select>'+
                 '<span>il giorno</span> <input type="number" class="recur-day" data-type="expense" data-id="'+t.id+'" min="1" max="31" value="'+t.dayOfMonth+'"></div>'+
-              (next ? '<div class="note" style="color:var(--ink-muted);">Prossima: '+next.split('-').reverse().join('/')+'</div>' : '')+
+              (next ? '<div class="note recur-next" style="color:var(--ink-muted);">Prossima: '+next.split('-').reverse().join('/')+'</div>' : '')+
             '</div>'+
             '<input type="number" class="recur-amt tnum" data-type="expense" data-id="'+t.id+'" min="0" step="0.01" value="'+t.amount+'">'+
             '<button class="del" data-action="del-recurring-expense" data-id="'+t.id+'" aria-label="Ferma ricorrenza">✕</button>'+
@@ -894,7 +894,7 @@
           '<div class="meta"><div class="cat">'+esc(t.label)+'</div>'+
             '<div class="note recur-line">↻ <select class="recur-freq" data-type="income" data-id="'+t.id+'">'+freqOptions(t.everyMonths)+'</select>'+
               '<span>il giorno</span> <input type="number" class="recur-day" data-type="income" data-id="'+t.id+'" min="1" max="31" value="'+t.dayOfMonth+'"></div>'+
-            (next ? '<div class="note" style="color:var(--ink-muted);">Prossima: '+next.split('-').reverse().join('/')+'</div>' : '')+
+            (next ? '<div class="note recur-next" style="color:var(--ink-muted);">Prossima: '+next.split('-').reverse().join('/')+'</div>' : '')+
           '</div>'+
           '<input type="number" class="recur-amt tnum" data-type="income" data-id="'+t.id+'" min="0" step="0.01" value="'+t.amount+'">'+
           '<button class="del" data-action="del-recurring-income" data-id="'+t.id+'" aria-label="Ferma ricorrenza">✕</button>'+
