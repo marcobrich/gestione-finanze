@@ -1342,6 +1342,19 @@
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', redrawActive);
   new MutationObserver(redrawActive).observe(document.documentElement, { attributes:true, attributeFilter:['data-theme'] });
 
+  /* ---------------- iOS standalone: allinea html, body e .app alla vera altezza schermo ---------------- */
+  function syncStandaloneHeight(){
+    var standalone = window.navigator.standalone === true;
+    var h = (standalone && screen.height > 0) ? screen.height + 'px' : '';
+    document.documentElement.style.height = h;
+    document.body.style.height = h;
+    var app = document.querySelector('.app');
+    if (app) app.style.height = h;
+  }
+  syncStandaloneHeight();
+  window.addEventListener('resize', syncStandaloneHeight);
+  window.addEventListener('orientationchange', function(){ setTimeout(syncStandaloneHeight, 300); });
+
   /* ---------------- Init ---------------- */
   ensureRecurringForMonth(state.selectedMonth);
   renderSpese();
