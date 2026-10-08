@@ -361,6 +361,7 @@
   function uid(){ return Math.random().toString(36).slice(2,10)+Date.now().toString(36); }
   function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
   function clamp(n,a,b){ return Math.max(a,Math.min(b,n)); }
+  function parseAmount(s){ return parseFloat(String(s==null?'':s).replace(',', '.')); }
   function fmtMoney(n, decimals){
     if (decimals===undefined) decimals = 0;
     var neg = n < 0;
@@ -665,7 +666,7 @@
         '<form class="add-expense" id="expenseForm">'+
           '<label class="field">Data<input type="date" name="date" value="'+defaultDate+'" required></label>'+
           '<label class="field">Categoria<select name="categoryId">'+catOptions+'</select></label>'+
-          '<label class="field">Importo (€)<input type="number" name="amount" min="0" step="0.01" inputmode="decimal" placeholder="0,00" required></label>'+
+          '<label class="field">Importo (€)<input type="text" name="amount" inputmode="decimal" pattern="[0-9]+([,.][0-9]{1,2})?" placeholder="0,00" required></label>'+
           '<label class="field">Nota (opzionale)<input type="text" name="note" maxlength="40" placeholder="es. spesa settimanale"></label>'+
           '<label class="check-row full"><input type="checkbox" name="recurring"> Spesa ricorrente</label>'+
           '<label class="field full freq-wrap" style="display:none;">Frequenza<select name="frequency">'+freqOptions(1)+'</select></label>'+
@@ -710,7 +711,7 @@
       var fd = new FormData(form);
       var date = fd.get('date');
       var categoryId = fd.get('categoryId');
-      var amount = parseFloat(fd.get('amount'));
+      var amount = parseAmount(fd.get('amount'));
       var note = (fd.get('note')||'').toString().trim();
       var recurring = !!fd.get('recurring');
       var frequency = parseInt(fd.get('frequency'),10) || 1;
@@ -951,7 +952,7 @@
         '<form class="add-expense" id="incomeForm" style="margin-top:12px;">'+
           '<label class="field">Data<input type="date" name="date" value="'+defaultIncomeDate+'" required></label>'+
           '<label class="field">Descrizione<input type="text" name="label" maxlength="30" placeholder="es. Stipendio" required></label>'+
-          '<label class="field full">Importo (€)<input type="number" name="amount" min="0" step="0.01" inputmode="decimal" placeholder="0,00" required></label>'+
+          '<label class="field full">Importo (€)<input type="text" name="amount" inputmode="decimal" pattern="[0-9]+([,.][0-9]{1,2})?" placeholder="0,00" required></label>'+
           '<label class="check-row full"><input type="checkbox" name="recurring"> Entrata ricorrente, a partire dal giorno scelto sopra</label>'+
           '<label class="field full freq-wrap" style="display:none;">Frequenza<select name="frequency">'+freqOptions(1)+'</select></label>'+
           '<button class="btn full" type="submit">+ Aggiungi entrata</button>'+
@@ -989,7 +990,7 @@
       ev.preventDefault();
       var fd = new FormData(ev.target);
       var label = (fd.get('label')||'').toString().trim();
-      var amount = parseFloat(fd.get('amount'));
+      var amount = parseAmount(fd.get('amount'));
       var date = fd.get('date');
       var recurring = !!fd.get('recurring');
       var frequency = parseInt(fd.get('frequency'),10) || 1;
