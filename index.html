@@ -412,12 +412,10 @@
     } else {
       btn.textContent = 'Accedi con Google';
       btn.onclick = function(){
-        auth.signInWithRedirect(googleProvider).catch(function(e){ alert('Errore login: ' + e.code + ' - ' + e.message); });
+        auth.signInWithPopup(googleProvider).catch(function(e){ alert('Errore login: ' + e.code + ' - ' + e.message); });
       };
     }
   }
-
-  auth.getRedirectResult().catch(function(e){ alert('Errore dopo il login: ' + e.code + ' - ' + e.message); });
 
   auth.onAuthStateChanged(function(user){
     updateAuthUI(user);
