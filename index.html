@@ -116,6 +116,8 @@
   .brand-mark{ width:22px; height:22px; flex:none; color:var(--accent); }
   header.topbar h1{ font-size:18px; font-weight:600; letter-spacing:0.01em; }
   header.topbar .tagline{ margin-left:auto; font-size:11px; text-transform:uppercase; letter-spacing:0.07em; color:var(--ink-muted); font-weight:600; }
+  .auth-btn{ font-size:11px; font-weight:600; padding:5px 10px; border-radius:999px; border:1px solid var(--hairline-strong); background:var(--card); color:var(--ink-2); flex:none; }
+  .auth-btn:active{ background:var(--accent-soft); }
 
   main.content{
     flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch;
@@ -321,6 +323,7 @@
     <svg class="brand-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.3 2.3L16 9.5"/></svg>
     <h1>Patrimonio</h1>
     <span class="tagline" id="headerTag">Spese</span>
+    <button class="auth-btn" id="authBtn" type="button">Accedi</button>
   </header>
 
   <main class="content">
@@ -345,6 +348,9 @@
   </nav>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
 (function(){
   "use strict";
@@ -353,6 +359,73 @@
   var CAT_SLOTS = 8;
   var MONTHS_IT = ["gennaio","febbraio","marzo","aprile","maggio","giugno","luglio","agosto","settembre","ottobre","novembre","dicembre"];
   var STORAGE_KEY = "patrimonio.v1";
+
+  /* ---------------- Cloud sync (Firebase) ---------------- */
+  var firebaseConfig = {
+    apiKey: "AIzaSyD-l0T8i2ILnyfVVcxKKz4xWWML5dj175Q",
+    authDomain: "gestione-finanze-9ae89.firebaseapp.com",
+    projectId: "gestione-finanze-9ae89",
+    storageBucket: "gestione-finanze-9ae89.firebasestorage.app",
+    messagingSenderId: "233928995920",
+    appId: "1:233928995920:web:d51be44046ce31f7640d55"
+  };
+  firebase.initializeApp(firebaseConfig);
+  var auth = firebase.auth();
+  var db = firebase.firestore();
+  var googleProvider = new firebase.auth.GoogleAuthProvider();
+  var cloudSaveTimer = null;
+
+  function cloudDocRef(uid){ return db.collection('users').doc(uid); }
+
+  function scheduleCloudSave(){
+    var user = auth.currentUser;
+    if (!user) return;
+    clearTimeout(cloudSaveTimer);
+    cloudSaveTimer = setTimeout(function(){
+      cloudDocRef(user.uid).set({ json: JSON.stringify(state), updatedAt: Date.now() })
+        .catch(function(e){ console.error('Salvataggio cloud fallito', e); });
+    }, 800);
+  }
+
+  function applyCloudJson(json){
+    try{
+      var parsed = JSON.parse(json);
+      if (parsed && parsed.categories && parsed.settings) state = parsed;
+    }catch(e){}
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+    ensureRecurringForMonth(state.selectedMonth);
+    renderCurrentTab();
+  }
+
+  function renderCurrentTab(){
+    if (currentTab==='spese') renderSpese();
+    else if (currentTab==='budget') renderBudget();
+    else if (currentTab==='previsione') renderPrevisioneShell();
+  }
+
+  function updateAuthUI(user){
+    var btn = document.getElementById('authBtn');
+    if (!btn) return;
+    if (user){
+      btn.textContent = (user.displayName ? user.displayName.split(' ')[0] : 'Account') + ' · Esci';
+      btn.onclick = function(){ auth.signOut(); };
+    } else {
+      btn.textContent = 'Accedi con Google';
+      btn.onclick = function(){ auth.signInWithRedirect(googleProvider); };
+    }
+  }
+
+  auth.onAuthStateChanged(function(user){
+    updateAuthUI(user);
+    if (!user) return;
+    cloudDocRef(user.uid).get().then(function(snap){
+      if (snap.exists && snap.data() && snap.data().json){
+        applyCloudJson(snap.data().json);
+      } else {
+        scheduleCloudSave();
+      }
+    }).catch(function(e){ console.error('Lettura cloud fallita', e); });
+  });
 
   function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
   function catColor(slot){ return slot>=0 && slot<CAT_SLOTS ? cssVar('--cat-'+slot) : cssVar('--cat-x'); }
@@ -435,6 +508,7 @@
   }
   function saveState(){
     try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+    scheduleCloudSave();
   }
 
   function catById(id){
